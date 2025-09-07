@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: QR Code Service
+  version: 0.1.0
+  description: Generates time-limited QR codes for event attendance.
+
+paths:
+  /generate:
+    post:
+      summary: Generate a QR code for the authenticated user
+      operationId: generateQrCode
+      tags:
+        - qrcode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+      responses:
+        '200':
+          description: The generated QR code data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QrCodeData'
+
+components:
+  schemas:
+    QrCodeData:
+      type: object
+      properties:
+        qr_code_id:
+          type: string
+          format: uuid
+        # The actual QR code image will likely be generated client-side from this ID,
+        # or this could be a base64 encoded image string.
+        data_for_qr: 
+          type: string
+          description: The raw data to be encoded in the QR code.
+        expires_at:
+          type: string
+          format: date-time

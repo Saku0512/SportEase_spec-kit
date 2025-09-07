@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: Attendance Service
+  version: 0.1.0
+  description: Records user attendance by validating QR codes.
+
+paths:
+  /record:
+    post:
+      summary: Record attendance from a scanned QR code
+      operationId: recordAttendance
+      tags:
+        - attendance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScannedQrCode'
+      responses:
+        '200':
+          description: Attendance recorded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceConfirmation'
+        '400':
+          description: Invalid or expired QR code.
+
+components:
+  schemas:
+    ScannedQrCode:
+      type: object
+      properties:
+        data_from_qr:
+          type: string
+          description: The raw data read from the QR code scanner.
+
+    AttendanceConfirmation:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SUCCESS
+        user_name:
+          type: string
+        event_name:
+          type: string
+        scanned_at:
+          type: string
+          format: date-time

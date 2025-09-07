@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Event Service
+  version: 0.1.0
+  description: Manages events, teams, matches, and registrations.
+
+paths:
+  /events:
+    get:
+      summary: List all events
+      operationId: listEvents
+      tags:
+        - events
+      responses:
+        '200':
+          description: A list of events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      summary: Create a new event
+      operationId: createEvent
+      tags:
+        - events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewEvent'
+      responses:
+        '201':
+          description: The created event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  /events/{eventId}:
+    get:
+      summary: Get an event by ID
+      operationId: getEventById
+      tags:
+        - events
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+
+  /events/{eventId}/register:
+    post:
+      summary: Register the current user for an event
+      operationId: registerForEvent
+      tags:
+        - events
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Registration successful.
+
+  /events/{eventId}/bracket:
+    get:
+      summary: Get the tournament bracket for an event
+      operationId: getEventBracket
+      tags:
+        - events
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The event's match bracket.
+          content:
+            application/json:
+              schema:
+                type: object # Define bracket structure
+
+  /matches/{matchId}:
+    put:
+      summary: Update a match result
+      operationId: updateMatchResult
+      tags:
+        - matches
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchResult'
+      responses:
+        '200':
+          description: The updated match.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+
+    NewEvent:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+
+    Match:
+      type: object
+      properties:
+        id:
+          type: integer
+        round:
+          type: integer
+        team1_id:
+          type: integer
+        team2_id:
+          type: integer
+        winner_id:
+          type: integer
+        status:
+          type: string
+
+    MatchResult:
+      type: object
+      properties:
+        winner_id:
+          type: integer

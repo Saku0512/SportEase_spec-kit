@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: Auth Service
+  version: 0.1.0
+  description: Handles user authentication via Google OAuth2.
+
+paths:
+  /login/google:
+    get:
+      summary: Initiate Google Login
+      operationId: loginGoogle
+      tags:
+        - auth
+      responses:
+        '302':
+          description: Redirects to Google's OAuth2 consent screen.
+
+  /oauth2/callback:
+    get:
+      summary: Google OAuth2 Callback
+      operationId: handleGoogleCallback
+      tags:
+        - auth
+      description: >
+        Handles the redirect from Google. Exchanges the code for a token,
+        validates the user, and sets a session cookie or returns a JWT.
+      responses:
+        '302':
+          description: Redirects to the frontend application upon successful login.
+
+  /me:
+    get:
+      summary: Get Current User Status
+      operationId: getMe
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Information about the currently authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Not authenticated.
+
+  /logout:
+    post:
+      summary: Logout User
+      operationId: logout
+      tags:
+        - auth
+      responses:
+        '204':
+          description: Successfully logged out.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          example: "student"
